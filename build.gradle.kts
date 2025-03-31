@@ -12,5 +12,10 @@ plugins {
 
     /* plugin serialization */
     alias(libs.plugins.jetbrains.serialization) apply false
+}
 
+buildscript{
+    dependencies{
+        classpath(libs.secrets.gradle.puglin)
+    }
 }
