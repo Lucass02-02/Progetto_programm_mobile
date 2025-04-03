@@ -1,4 +1,4 @@
-plugins {
+ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
@@ -12,6 +12,8 @@ plugins {
     /* plugin serialization */
     alias(libs.plugins.jetbrains.serialization)
 
+     /*Secrets Gradle Plugin */
+     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -74,6 +76,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
+
     /* dependency injection */
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
@@ -90,4 +93,11 @@ dependencies {
 
     /* View model compose */
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    /* GoogleMaps */
+    implementation(libs.maps.compose)
+
+    implementation(libs.gson)
+
+
 }

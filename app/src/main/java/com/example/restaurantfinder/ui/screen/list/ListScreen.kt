@@ -46,6 +46,7 @@ fun ListScreen(
 
     Column(modifier = modifier) {
         Text(
+            modifier=Modifier.padding(16.dp),
             text = "Hotels",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
@@ -83,11 +84,11 @@ fun HotelItem(
             }
     ) {
         Text(
-            text = hotel.Denominazione.toString(),
+            text = hotel.denominazione.toString(),
             style = MaterialTheme.typography.bodyLarge
         )
         Text(
-            text = "${hotel.Indirizzo}, ${hotel.Classificazione}, ${hotel.Tipologia}",
+            text = "${hotel.indirizzo}, ${hotel.classificazione}, ${hotel.denominazione}",
             style = MaterialTheme.typography.bodyMedium
         )
     }

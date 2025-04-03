@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.restaurantfinder.common.BASE_URL
 import com.example.restaurantfinder.data.local.HotelDatabase
+// Rimuovi import non usato: import com.example.restaurantfinder.data.remote.ApiResponse
 import com.example.restaurantfinder.data.remote.HotelService
 import com.example.restaurantfinder.data.remote.model.HotelRetrofitRepository
 import com.example.restaurantfinder.domain.model.Hotel
@@ -21,79 +22,75 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
-/* file con tutte le configurazioni dei dependecy Injection */
+/* file con tutte le configurazioni dei dependency Injection */
 
-@Module  /* deve essere annotato con il module del dagger */
-@InstallIn(SingletonComponent::class) /* dice come si comporta il modulo dentro l'applicazione*/
-
+@Module
+@InstallIn(SingletonComponent::class)
 object RetrofitModule {
-
-    @Provides /* perche deve essere chiamato in automatico */
-    @Singleton /* perche devo avere un unica istanza del client */
-
-    /* creazione retrofit client */
-
-    fun retrofitClient(): Retrofit =        /* restituisce un istanza di retrofit cioè: */
-        Retrofit.Builder()                  /*quello che il builder ci ritorna */
-            .baseUrl(BASE_URL)              /* url a cui fa riferimento*/
-            .addConverterFactory(GsonConverterFactory.create())         /* converter json siccome la risposta è un json */
-            .build()
-
 
     @Provides
     @Singleton
-    fun hotelService(retrofit: Retrofit): HotelService =  /* gli viene passato il client appena istanziato */
-        retrofit.create(HotelService::class.java)   /*crea l hotel service */
+    fun retrofitClient(): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+    @Provides
+    @Singleton
+    fun hotelService(retrofit: Retrofit): HotelService =
+        retrofit.create(HotelService::class.java)
 }
 
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RepositoryModule {
+abstract class RepositoryModule { // Mantiene 'abstract class'
 
-    @Provides
-    @Singleton
-    fun provideRemoteRepository(hotelService: HotelService): HotelRemoteRepository {
-        return object : HotelRemoteRepository {
-            override suspend fun getHotel(): List<Hotel> {
-                // Simuliamo una chiamata API tramite hotelService
-                return hotelService.getHotels() // Assicurati che HotelService abbia questo metodo
-            }
-        }
-    }
-
-    @Provides
-    @Singleton
-    fun provideLocalRepository(database: HotelDatabase): HotelLocalRepository {
-        return object : HotelLocalRepository {
-            private val hotels = mutableListOf<Hotel>()
-
-            override suspend fun insert(hotel: Hotel) {
-                hotels.add(hotel)
-            }
-
-            override suspend fun insert(hotels: List<Hotel>) {
-                this.hotels.addAll(hotels)
-            }
-
-            override fun getAll(): Flow<List<Hotel>> {
-                return flow { emit(hotels) }
-            }
-
-            override suspend fun clearAll() {
-                hotels.clear()
-            }
-        }
-    }
-
-   /* @Binds
-    @Singleton
-    abstract fun remoteRepository(repository: HotelRetrofitRepository): HotelRemoteRepository
+    // --- Metodi @Binds ---
+    // Questi rimangono direttamente nell'abstract class
 
     @Binds
     @Singleton
-    abstract fun localRepository(repository: HotelLocalRepository): HotelLocalRepository */
+    abstract fun bindRemoteRepository(
+        repository: HotelRetrofitRepository // Assicurati che HotelRetrofitRepository abbia @Inject constructor
+    ): HotelRemoteRepository
+
+    // Questo @Binds è commentato - lascialo così a meno che tu non crei
+    // una classe concreta (es. HotelRoomRepository) per il db locale.
+    /*
+    @Binds
+    @Singleton
+    abstract fun bindLocalRepository(repository: HotelRoomRepository): HotelLocalRepository
+    */
+
+    // --- Metodi @Provides ---
+    // Questi vanno nel companion object
+
+    companion object {
+
+        @Provides
+        @Singleton
+        fun provideLocalRepository(database: HotelDatabase): HotelLocalRepository {
+            // IMPORTANTE: Fornisci HotelLocalRepository solo UNA volta.
+            // Se usi questo @Provides, assicurati che il @Binds bindLocalRepository sopra sia commentato.
+            // Questa è l'implementazione MOCK (in memoria):
+            return object : HotelLocalRepository {
+                private val hotels = mutableListOf<Hotel>()
+                override suspend fun insert(hotel: Hotel) { hotels.add(hotel) }
+                override suspend fun insert(hotels: List<Hotel>) { this.hotels.addAll(hotels) }
+                override fun getAll(): Flow<List<Hotel>> { return flow { emit(hotels) } }
+                override suspend fun clearAll() { hotels.clear() }
+            }
+        }
+
+        // Altri metodi @Provides per questo modulo andrebbero qui...
+    }
 }
+
+// ELIMINA QUESTA PARTE DUPLICATA CHE ERA QUI SOTTO RepositoryModule
+
+
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
@@ -105,5 +102,5 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun hotelDao(database: HotelDatabase) = database.getHotelDao()
+    fun hotelDao(database: HotelDatabase) = database.getHotelDao() // Giusto: fornisce HotelDao
 }

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:name=".HotelFinder"
@@ -16,6 +17,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RestaurantFinder"
         tools:targetApi="31">
+
+        <!-- Meta-data Google Maps Api Key -->
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="${maps_apikey}" />
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

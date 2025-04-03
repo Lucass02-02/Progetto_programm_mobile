@@ -8,29 +8,29 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-
 fun LocalHotel.toModel(): Hotel = Hotel(
-    Tipologia = Tipologia,
-    Classificazione = Classificazione,
-    Denominazione = Denominazione,
-    Indirizzo = Indirizzo,
-    Posti_letto = Posti_letto,
-    Totale_camere = Totale_camere
+    indirizzo = indirizzo,
+    classificazione = classificazione,
+    denominazione = denominazione,
+    foto = foto,
+    posizione = posizione,
+    icon = icon,
+    iconBackgroundColor = iconBackgroundColor,
+    iconMaskBaseUri = iconMaskBaseUri
 )
-
-
-
 
 fun Hotel.toLocal(): LocalHotel = LocalHotel(
-    Tipologia = Tipologia,
-    Classificazione = Classificazione,
-    Denominazione = Denominazione,
-    Indirizzo = Indirizzo,
-    Posti_letto = Posti_letto,
-    Totale_camere = Totale_camere
+    indirizzo = indirizzo,
+    classificazione = classificazione,
+    denominazione = denominazione,
+    foto = foto,
+    posizione = posizione,
+    icon = icon,
+    iconBackgroundColor = iconBackgroundColor,
+    iconMaskBaseUri = iconMaskBaseUri
 )
 
-class HotelRoomRepository @Inject constructor(private val hotelDao: HotelDao): HotelLocalRepository {
+class HotelRoomRepository @Inject constructor(private val hotelDao: HotelDao) : HotelLocalRepository {
     override suspend fun insert(hotel: Hotel) {
         hotelDao.insert(hotel.toLocal())
     }

@@ -16,9 +16,9 @@ interface HotelDao {
     @Upsert
     suspend fun insert(hotel: List<LocalHotel>)
 
-    @Query("SELECT * FROM hotel ORDER BY Classificazione, Tipologia ASC")
+    @Query("SELECT * FROM hotels ORDER BY Classificazione, Denominazione ASC")
     fun getAll(): Flow<List<LocalHotel>>
 
-    @Query("DELETE FROM hotel")
+    @Query("DELETE FROM hotels")
     suspend fun deleteAll()
 }
